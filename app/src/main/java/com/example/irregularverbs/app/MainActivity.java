@@ -5,19 +5,18 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleAdapter;
 import com.example.irregularverbs.fragments.myFragment;
 import com.example.irregularverbs.fragments.mySecFragment;
@@ -27,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity{
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -67,28 +66,27 @@ public class MainActivity extends FragmentActivity {
         setAdapter();
         mDrawerList.setAdapter(menuAdapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout,
-                R.drawable.ic_drawer,
                 R.string.drawer_open,
                 R.string.drawer_close
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(mTitle);
                 shouldGoInvisible = false;
-                searchItem.setVisible(true);
+                //searchItem.setVisible(true);
                 closeOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
-                mSearchView.setQuery("", false);
-                mSearchView.clearFocus();
-                searchItem.setVisible(false);
-                mSearchView.setIconified(true);
+                getSupportActionBar().setTitle(mDrawerTitle);
+               // mSearchView.setQuery("", false);
+                //mSearchView.clearFocus();
+                //searchItem.setVisible(false);
+                //mSearchView.setIconified(true);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -126,17 +124,8 @@ public class MainActivity extends FragmentActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem settings = menu.findItem(R.id.settings);
         settings.setIntent(new Intent(this, PrefActivity.class));
-        searchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) searchItem.getActionView();
-        mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                String haduken = newText.toLowerCase();
-                ourFragment.search(haduken);
-                return true;
-            }
-
+        /*mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String haduken = query.toLowerCase();
@@ -144,7 +133,14 @@ public class MainActivity extends FragmentActivity {
                 mSearchView.clearFocus();
                 return false;
             }
-        });
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                String haduken = newText.toLowerCase();
+                ourFragment.search(haduken);
+                return true;
+            }
+        });*/
         return true;
     }
 
@@ -159,7 +155,9 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -199,7 +197,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override
