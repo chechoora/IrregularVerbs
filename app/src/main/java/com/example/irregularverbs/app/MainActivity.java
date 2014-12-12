@@ -8,15 +8,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import com.example.irregularverbs.fragments.myFragment;
 import com.example.irregularverbs.fragments.mySecFragment;
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity{
     SearchView mSearchView;
     boolean shouldGoInvisible;
     MenuItem searchItem;
+    public static int clearHistory=0;
 
 
     //fragments stuff
@@ -50,8 +52,8 @@ public class MainActivity extends ActionBarActivity{
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     String[] menuTitles = {"All", "History"};
-    int[] menuIc = {R.drawable.ic_device_all,
-            R.drawable.ic_device_access_sd_storage};
+    int[] menuIc = {R.drawable.ic_action_view_day,
+            R.drawable.ic_action_visibility};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +79,16 @@ public class MainActivity extends ActionBarActivity{
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
                 shouldGoInvisible = false;
-                //searchItem.setVisible(true);
+                searchItem.setVisible(true);
                 closeOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle(mDrawerTitle);
-               // mSearchView.setQuery("", false);
-                //mSearchView.clearFocus();
-                //searchItem.setVisible(false);
-                //mSearchView.setIconified(true);
+                mSearchView.setQuery("", false);
+                mSearchView.clearFocus();
+                searchItem.setVisible(false);
+                mSearchView.setIconified(true);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -122,9 +124,10 @@ public class MainActivity extends ActionBarActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem settings = menu.findItem(R.id.settings);
-        settings.setIntent(new Intent(this, PrefActivity.class));
-        /*mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        /*MenuItem settings = menu.findItem(R.id.settings);
+        settings.setIntent(new Intent(this, PrefActivity.class));*/
+        searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -140,7 +143,7 @@ public class MainActivity extends ActionBarActivity{
                 ourFragment.search(haduken);
                 return true;
             }
-        });*/
+        });
         return true;
     }
 
@@ -158,8 +161,14 @@ public class MainActivity extends ActionBarActivity{
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent intent = new Intent(this, PrefActivity.class);
+                startActivityForResult(intent, 1);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -203,7 +212,7 @@ public class MainActivity extends ActionBarActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        sp = getSharedPreferences("myPref", MODE_PRIVATE);
+      /*  sp = getSharedPreferences("myPref", MODE_PRIVATE);
         ed = sp.edit();
         int clrH = sp.getInt("clearH", 0);
         if (clrH == 1) {
@@ -215,9 +224,17 @@ public class MainActivity extends ActionBarActivity{
         if (clrF == 1) {
             ed.putInt("clearF", 0);
             ed.commit();
-        }
+        }*/
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (clearHistory==1){
+            clearHistoryList();
+            clearHistory=0;
+        }
+
+    }
 
     private void clearHistoryList() {
         db.delete();
@@ -265,7 +282,6 @@ public class MainActivity extends ActionBarActivity{
                     savedInstanceState, "curfrag");
         ourFragment = (Support) getSupportFragmentManager().getFragment(
                 savedInstanceState, "curfrag");
-
     }
 
     @Override

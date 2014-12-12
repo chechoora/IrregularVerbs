@@ -4,6 +4,7 @@
     <style name="AppTheme"  parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/general</item>
         <item name="colorAccent">@color/general</item>
+        <item name="android:textColor">@color/abc_primary_text_material_light</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources>
